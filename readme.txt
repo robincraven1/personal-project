@@ -36,3 +36,12 @@
 
 #7 created .ebignore
 - ignores things for deployment by aws eb, or else slow
+
+-------- COMMIT 4 ---------
+
+#8 created python test file for fastapi app
+- test_health_check verifies the root endpoint returns a 200 status with the correct JSON body.
+- test_read_item confirms path parameters and query strings are parsed correctly.
+- test_read_item_no_query checks that optional parameters default to None when omitted.
+- test_app_info validates the info endpoint returns the expected app name and endpoint list.
+- run by doing python -m pytest (must activate venv first)
