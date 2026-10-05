@@ -62,9 +62,21 @@
 - The install step installs your production dependencies from requirements.txt plus the test tools (pytest + httpx)
 - The final step runs pytest to execute your test suite. If any test fails, the job fails and deployment is blocked.
 
-#12 deploy.yml part 3 - DEPLOYMENT AUTOMATED
+#12 deploy.yml part 3 - DEPLOYMENT AUTOMATED (if tests pass, the new fastAPI goes LIVE hosted by AWS EB, if fails then old version stays LIVE, but code still pushed to github tho)
 - needs: test makes this job wait for the test job to succeed before starting. If tests fail, the deploy never runs.
 - The if condition ensures deployment only happens on direct pushes to main. Pull requests trigger the test job but skip deployment.
 - aws-actions/configure-aws-credentials@v4 authenticates the runner using the secrets you will add to GitHub in the next step.
 - aws-actions/aws-elasticbeanstalk-deploy@v1.0.0 packages your code and deploys it to Elastic Beanstalk. It auto-creates the application and environment if they do not exist yet.
 - option-settings configures the IAM roles and instance type (t2.micro for free tier eligibility).
+
+------ COMMIT 6 -------
+
+#13 fixing codebase so cicd tests pass bc they had failed.
+- I did git push with this new cicd workflow: The tests failed, so never got to deploy stage
+- Means that altho new code is now pushed to github, AWS EB still has old FASTAPI app version live, not new app.
+- If tests pass, if its first time deploying, the aws-actions/aws-elasticbeanstalk-deploy@v1.0.0 action auto creates both the EB fastapi-cicd-app and the env (fastapi-cicd-env) if dont exist.
+- Behind the scenes, AWS is launching a t2.micro EC2 instance, installing Python 3.11, setting up nginx as a reverse proxy, and starting my FastAPI app with Gunicorn.
+- open the website by go console, eb, click url
+
+- HOWEVER: tests failed so didnt deploy.
+- Need to fix so it passes tests i think the issue is that command: pytest doesnt work. only works if venv activated then do python -m pytest

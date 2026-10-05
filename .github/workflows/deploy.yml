@@ -30,7 +30,7 @@ jobs:
           pip install pytest httpx
 
       - name: Run tests
-        run: pytest
+        run: python -m pytest
 
   deploy:
     runs-on: ubuntu-latest
