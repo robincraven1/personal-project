@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-app = FastAPI(title="FastAPI CI/CD Demo", version="1.0.0")
+application = FastAPI(title="FastAPI CI/CD Demo", version="1.0.0")
 
 
 @app.get("/")

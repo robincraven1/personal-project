@@ -69,6 +69,9 @@
 - aws-actions/aws-elasticbeanstalk-deploy@v1.0.0 packages your code and deploys it to Elastic Beanstalk. It auto-creates the application and environment if they do not exist yet.
 - option-settings configures the IAM roles and instance type (t2.micro for free tier eligibility).
 
+#13 added aws creds to github repo secrets section in github.com
+- these aws creds are mentioned in the deploy section of cicd.
+
 ------ COMMIT 6 -------
 
 #13 fixing codebase so cicd tests pass bc they had failed.
