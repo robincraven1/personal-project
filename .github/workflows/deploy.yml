@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: us-west-2
   APPLICATION_NAME: fastapi-cicd-app
   ENVIRONMENT_NAME: fastapi-cicd-env
 
