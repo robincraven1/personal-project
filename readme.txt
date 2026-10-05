@@ -45,3 +45,26 @@
 - test_read_item_no_query checks that optional parameters default to None when omitted.
 - test_app_info validates the info endpoint returns the expected app name and endpoint list.
 - run by doing python -m pytest (must activate venv first)
+
+-------- COMMIT 5 --------
+
+#9 created cicd github actions to automate run tests then deploy
+- created deploy.yml
+
+#10 deploy.yml part 1 - HEADER
+- on = the trigger ie when push or pull
+- env = variables to be shared across repo
+
+#11 deploy.yml part 2 - TESTING AUTOMATED
+- runs-on: ubuntu-latest tells GitHub to run this job on a fresh Linux virtual machine.
+- actions/checkout@v4 pulls your repository code into the runner (actual vm doing stuff) so subsequent steps can access it.
+- actions/setup-python@v5 installs Python 3.11 and caches pip packages for faster runs.
+- The install step installs your production dependencies from requirements.txt plus the test tools (pytest + httpx)
+- The final step runs pytest to execute your test suite. If any test fails, the job fails and deployment is blocked.
+
+#12 deploy.yml part 3 - DEPLOYMENT AUTOMATED
+- needs: test makes this job wait for the test job to succeed before starting. If tests fail, the deploy never runs.
+- The if condition ensures deployment only happens on direct pushes to main. Pull requests trigger the test job but skip deployment.
+- aws-actions/configure-aws-credentials@v4 authenticates the runner using the secrets you will add to GitHub in the next step.
+- aws-actions/aws-elasticbeanstalk-deploy@v1.0.0 packages your code and deploys it to Elastic Beanstalk. It auto-creates the application and environment if they do not exist yet.
+- option-settings configures the IAM roles and instance type (t2.micro for free tier eligibility).
