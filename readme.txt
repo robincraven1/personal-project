@@ -1,24 +1,8 @@
-Creating the codebase:
+------ COMMIT 1 -------
 
-- pip install fastapi uvicorn boto3 python-multipart
+#1 created aws account, admin, access key in vscode
 
-- installed FastAPI
-- installed an ASGI server (Uvicorn)
-- installed the AWS Python SDK (Boto3)
-- installed python-multipart (for handling file uploads in FastAPI)
-
-- AWS ORGANISATIONS
-- AWS ACCOUNTS eg management, dev, test
-- AWS IAM ACCOUNTS within those 
-
-- for me i just have: one root user, one iam user
-
-- signed in as root user on console
-- created iam user (developer-workspace) with s3-full-access, creates access key
-- used access key in vscode cli, which allows vscode do iam user permissions
-- can modify permissions later in console as root
-- can create other iam users, but must switch to it from default, in files code
-
+#2 did terraform nextwork tutorial, uploads files to s3 bucket
 - downloaded terraform arm64 = x64
 - made main.tf terraform file in project
 - uses blocks, terraform registry for modules
@@ -26,3 +10,15 @@ Creating the codebase:
 - terraform plan to review whats made/updated/destroyed
 - terraform apply to acc do it
 - terraform destroy to then undo that apply
+
+------- COMMIT 2 ---------
+
+#3 setup environment for fastapi app
+- created venv, activated it, downloaded fastapi httpx gunicorn
+
+#4 (copied code for) fastapi app endpoints with health checks
+- GET / is health check returns apps version, helps monitoring tools and load balancers 
+- GET /items/{item_id} is a sample endpoint accepts a typed path parameter and optional query string.
+- GET /info returns metadata about the API itself, including a list of all available endpoints.
+
+
