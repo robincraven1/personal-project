@@ -74,7 +74,7 @@
 
 ------ COMMIT 6 -------
 
-#13 fixing codebase so cicd tests pass bc they had failed.
+#14 fixing codebase so cicd tests pass bc they had failed.
 - I did git push with this new cicd workflow: The tests failed, so never got to deploy stage
 - Means that altho new code is now pushed to github, AWS EB still has old FASTAPI app version live, not new app.
 - If tests pass, if its first time deploying, the aws-actions/aws-elasticbeanstalk-deploy@v1.0.0 action auto creates both the EB fastapi-cicd-app and the env (fastapi-cicd-env) if dont exist.
@@ -83,3 +83,15 @@
 
 - HOWEVER: tests failed so didnt deploy.
 - Need to fix so it passes tests i think the issue is that command: pytest doesnt work. only works if venv activated then do python -m pytest
+
+- finally fixed it after several commits and pushes to check cicd works
+
+------- COMMIT 7 ---------
+
+#15 changed fastapi code, committed and pushed, to observe cicd working
+- worked
+
+------- COMMIT 8 --------
+
+#16 deliberate change to test file so cicd tests fail
+
