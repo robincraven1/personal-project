@@ -110,7 +110,9 @@
 
 ------- PART 9 ---------
 
-#19 creating staging before prod
+#19 fixed this branches deliberate cicd tests fail, then pr to merge to main, delete this branch
+
+#20 creating staging before prod
 - dev (local) -> test (local device) -> stage (irl mimic) -> prod (aws live)
 - updating deploy.yml to have tests (1), deploy staging (2), deploy prod (3)
 - now have ENVIRONMENT_NAME_STAGING (auto) and ENVIORNMENT_NAME_PROD (manual email approval)
