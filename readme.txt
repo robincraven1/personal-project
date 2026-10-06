@@ -125,3 +125,12 @@
 
 #24 now only main branch exists, pulled latest now new main on github to local
 #25 quick commit to main and pushed to check cicd process w tests + staging + prod
+
+#26 cicd tests pass, deploys to staging, then now triggers email to check before approve deploy to prod
+
+------- PART 11 --------
+
+#27 project finished. aws only 750hrs per month (730hrs) of EC2
+#28 hence must delete staging env + prod env in AWS bc thats 1460hrs.
+#29 if we git commit then push then the AWS EB will auto spin up the EC2 again.
+#30 might amend the fastapi app. software engineering.
