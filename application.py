@@ -5,7 +5,7 @@ app = FastAPI(title="FastAPI CI/CD Demo", version="1.0.0")
 
 @app.get("/")
 def health_check():
-    return {"status": "healthy", "version": "1.0.0"}
+    return {"status": "healthy", "version": "1.1.0"}
 
 
 @app.get("/items/{item_id}")
