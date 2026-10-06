@@ -7,9 +7,10 @@ on:
     branches: [main]
 
 env:
-  AWS_REGION: us-west-2
+  AWS_REGION: us-east-1
   APPLICATION_NAME: fastapi-cicd-app
-  ENVIRONMENT_NAME: fastapi-cicd-env
+  ENVIRONMENT_NAME_STAGING: fastapi-cicd-staging
+  ENVIRONMENT_NAME_PRODUCTION: fastapi-cicd-env
 
 jobs:
   test:
@@ -30,18 +31,15 @@ jobs:
           pip install pytest httpx
 
       - name: Run tests
-        run: python -m pytest
+        run: pytest
 
-  deploy:
+  deploy-staging:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Create deployment package
-        run: python3 -m zipfile -c deployment.zip application.py Procfile requirements.txt
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -50,35 +48,55 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Prepare Elastic Beanstalk S3 bucket
-        id: eb-bucket
-        run: |
-          account_id="$(aws sts get-caller-identity --query Account --output text)"
-          bucket_name="elasticbeanstalk-${AWS_REGION}-${account_id}"
-
-          if ! aws s3api head-bucket --bucket "$bucket_name" 2>/dev/null; then
-            aws s3api create-bucket \
-              --bucket "$bucket_name" \
-              --region "$AWS_REGION" \
-              --create-bucket-configuration LocationConstraint="$AWS_REGION"
-          fi
-
-          aws s3api put-bucket-ownership-controls \
-            --bucket "$bucket_name" \
-            --ownership-controls 'Rules=[{ObjectOwnership=ObjectWriter}]'
-
-          echo "bucket=$bucket_name" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy to Elastic Beanstalk
+      - name: Deploy to Staging
         uses: aws-actions/aws-elasticbeanstalk-deploy@v1.0.0
         with:
           aws-region: ${{ env.AWS_REGION }}
           application-name: ${{ env.APPLICATION_NAME }}
-          environment-name: ${{ env.ENVIRONMENT_NAME }}
-          deployment-package-path: deployment.zip
-          create-s3-bucket-if-not-exists: false
-          s3-bucket-name: ${{ steps.eb-bucket.outputs.bucket }}
-          platform-arn: "arn:aws:elasticbeanstalk:us-west-2::platform/Python 3.11 running on 64bit Amazon Linux 2023"
+          environment-name: ${{ env.ENVIRONMENT_NAME_STAGING }}
+          solution-stack-name: "64bit Amazon Linux 2023 v4.13.0 running Python 3.11"
+          option-settings: |
+            [
+              {
+                "Namespace": "aws:autoscaling:launchconfiguration",
+                "OptionName": "IamInstanceProfile",
+                "Value": "aws-elasticbeanstalk-ec2-role"
+              },
+              {
+                "Namespace": "aws:elasticbeanstalk:environment",
+                "OptionName": "ServiceRole",
+                "Value": "aws-elasticbeanstalk-service-role"
+              },
+              {
+                "Namespace": "aws:ec2:instances",
+                "OptionName": "InstanceTypes",
+                "Value": "t2.micro"
+              }
+            ]
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to Production
+        uses: aws-actions/aws-elasticbeanstalk-deploy@v1.0.0
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          application-name: ${{ env.APPLICATION_NAME }}
+          environment-name: ${{ env.ENVIRONMENT_NAME_PRODUCTION }}
+          solution-stack-name: "64bit Amazon Linux 2023 v4.13.0 running Python 3.11"
           option-settings: |
             [
               {

@@ -1,6 +1,9 @@
------- COMMIT 1 -------
+------ PART 1 -------
 
 #1 created aws account, admin, access key in vscode
+- .gitignore contains secrets, bots use to cryptomine on aws, or ransom data
+- teams share .env secrets via AWS secrets manager, or env.example
+- .gitignore contains node_modules so no heavy files stored
 
 #2 did terraform nextwork tutorial, uploads files to s3 bucket by talk to AWS API
 - better than aws cloudformation bc terraform is cloud provider agnostic
@@ -12,7 +15,7 @@
 - terraform apply to acc do it
 - terraform destroy to then undo that apply
 
-------- COMMIT 2 ---------
+------- PART 2 ---------
 
 #3 setup environment for fastapi app
 - created venv, activated it, downloaded fastapi httpx gunicorn
@@ -22,7 +25,7 @@
 - GET /items/{item_id} is a sample endpoint accepts a typed path parameter and optional query string.
 - GET /info returns metadata about the API itself, including a list of all available endpoints.
 
--------- COMMIT 3 --------
+-------- PART 3 --------
 
 #5 created procfile to tell elastic beanstalk how to start app
 - static website: react or html only and cant execute code, or use fastapi
@@ -37,7 +40,7 @@
 #7 created .ebignore
 - ignores things for deployment by aws eb, or else slow
 
--------- COMMIT 4 ---------
+-------- PART 4 ---------
 
 #8 created python test file for fastapi app
 - test_health_check verifies the root endpoint returns a 200 status with the correct JSON body.
@@ -46,7 +49,7 @@
 - test_app_info validates the info endpoint returns the expected app name and endpoint list.
 - run by doing python -m pytest (must activate venv first)
 
--------- COMMIT 5 --------
+-------- PART 5 --------
 
 #9 created cicd github actions to automate run tests then deploy
 - created deploy.yml
@@ -72,7 +75,7 @@
 #13 added aws creds to github repo secrets section in github.com
 - these aws creds are mentioned in the deploy section of cicd.
 
------- COMMIT 6 -------
+------ PART 6 -------
 
 #14 fixing codebase so cicd tests pass bc they had failed.
 - I did git push with this new cicd workflow: The tests failed, so never got to deploy stage
@@ -86,13 +89,28 @@
 
 - finally fixed it after several commits and pushes to check cicd works
 
-------- COMMIT 7 ---------
+------- PART 7 ---------
 
 #15 changed fastapi code, committed and pushed, to observe cicd working
 - worked
 
-------- COMMIT 8 --------
+------- PART 8 --------
 
 #16 new branch to make deliberate change to test file so cicd tests fail
 
 #17 wasnt letting me create pull req so doing another commit
+
+#18 wasnt signed in so was able to open PR test-fail branch to main
+- observed the cicd tests in the PR review
+- tests failed, skips deployment (doesnt deploy in PR review anyway)
+- in this scenario, at PR review, u shld not merge even if no conflicts
+- why would u merge broken code to main? dumb 
+- must resolve cicd tests to pass by more commits, resolve any conflicts
+- then click auto merge to main, then it WILL deploy new updated app! 
+
+------- PART 9 ---------
+
+#19 creating staging before prod
+- dev (local) -> test (local device) -> stage (irl mimic) -> prod (aws live)
+- updating deploy.yml to have tests (1), deploy staging (2), deploy prod (3)
+- now have ENVIRONMENT_NAME_STAGING (auto) and ENVIORNMENT_NAME_PROD (manual email approval)
