@@ -48,12 +48,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Create deployment package
+        run: python3 -m zipfile -c deployment.zip application.py requirements.txt Procfile
+
       - name: Deploy to Staging
         uses: aws-actions/aws-elasticbeanstalk-deploy@v1.0.0
         with:
           aws-region: ${{ env.AWS_REGION }}
           application-name: ${{ env.APPLICATION_NAME }}
           environment-name: ${{ env.ENVIRONMENT_NAME_STAGING }}
+          deployment-package-path: deployment.zip
           solution-stack-name: "64bit Amazon Linux 2023 v4.13.0 running Python 3.11"
           option-settings: |
             [
@@ -90,12 +94,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Create deployment package
+        run: python3 -m zipfile -c deployment.zip application.py requirements.txt Procfile
+
       - name: Deploy to Production
         uses: aws-actions/aws-elasticbeanstalk-deploy@v1.0.0
         with:
           aws-region: ${{ env.AWS_REGION }}
           application-name: ${{ env.APPLICATION_NAME }}
           environment-name: ${{ env.ENVIRONMENT_NAME_PRODUCTION }}
+          deployment-package-path: deployment.zip
           solution-stack-name: "64bit Amazon Linux 2023 v4.13.0 running Python 3.11"
           option-settings: |
             [
