@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: us-west-2
   APPLICATION_NAME: fastapi-cicd-app
   ENVIRONMENT_NAME_STAGING: fastapi-cicd-staging
   ENVIRONMENT_NAME_PRODUCTION: fastapi-cicd-env
@@ -48,6 +48,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Resolve available Elastic Beanstalk platform
+        id: platform
+        run: |
+          solution_stack=$(aws elasticbeanstalk list-available-solution-stacks \
+            --query "SolutionStacks[?contains(@, 'Python 3.11')]|[0]" \
+            --output text)
+          if [ -z "$solution_stack" ] || [ "$solution_stack" = "None" ]; then
+            echo "No Elastic Beanstalk Python 3.11 solution stack is available in $AWS_REGION" >&2
+            exit 1
+          fi
+          echo "Using Elastic Beanstalk platform: $solution_stack"
+          echo "solution_stack=$solution_stack" >> "$GITHUB_OUTPUT"
+
       - name: Create deployment package
         run: python3 -m zipfile -c deployment.zip application.py requirements.txt Procfile
 
@@ -58,7 +71,7 @@ jobs:
           application-name: ${{ env.APPLICATION_NAME }}
           environment-name: ${{ env.ENVIRONMENT_NAME_STAGING }}
           deployment-package-path: deployment.zip
-          solution-stack-name: "64bit Amazon Linux 2023 v4.13.7 running Python 3.11"
+          solution-stack-name: ${{ steps.platform.outputs.solution_stack }}
           option-settings: |
             [
               {
@@ -94,6 +107,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Resolve available Elastic Beanstalk platform
+        id: platform
+        run: |
+          solution_stack=$(aws elasticbeanstalk list-available-solution-stacks \
+            --query "SolutionStacks[?contains(@, 'Python 3.11')]|[0]" \
+            --output text)
+          if [ -z "$solution_stack" ] || [ "$solution_stack" = "None" ]; then
+            echo "No Elastic Beanstalk Python 3.11 solution stack is available in $AWS_REGION" >&2
+            exit 1
+          fi
+          echo "Using Elastic Beanstalk platform: $solution_stack"
+          echo "solution_stack=$solution_stack" >> "$GITHUB_OUTPUT"
+
       - name: Create deployment package
         run: python3 -m zipfile -c deployment.zip application.py requirements.txt Procfile
 
@@ -104,7 +130,7 @@ jobs:
           application-name: ${{ env.APPLICATION_NAME }}
           environment-name: ${{ env.ENVIRONMENT_NAME_PRODUCTION }}
           deployment-package-path: deployment.zip
-          solution-stack-name: "64bit Amazon Linux 2023 v4.13.7 running Python 3.11"
+          solution-stack-name: ${{ steps.platform.outputs.solution_stack }}
           option-settings: |
             [
               {
