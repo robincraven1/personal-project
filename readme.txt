@@ -116,3 +116,12 @@
 - dev (local) -> test (local device) -> stage (irl mimic) -> prod (aws live)
 - updating deploy.yml to have tests (1), deploy staging (2), deploy prod (3)
 - now have ENVIRONMENT_NAME_STAGING (auto) and ENVIORNMENT_NAME_PROD (manual email approval)
+
+#21 commited changes above in this branch (fixed deliberate cicd error now ++ created staging env)
+#22 pushed this branch, pr to merge to main, passes cicd in the pr review
+#23 once merged to main, main does ANOTHER cicd check passes, can delete old branch
+
+------ PART 10 --------
+
+#24 now only main branch exists, pulled latest now new main on github to local
+#25 quick commit to main and pushed to check cicd process
