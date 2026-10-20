@@ -139,7 +139,7 @@
 ------ PART 12 - DOCKER ------
 
 #32 created requirements.txt
-#33 have to activate venv to install requirements.txt
+#33 usually have to activate venv but dont need in container to install requirements.txt
 
 #34 created MULTI STAGE dockerfile 
 #35 first BUILDER STAGE installs dependencies + PROD RUNTIME STAGE then final image that acc runs in prod
@@ -171,4 +171,43 @@
 #55 disk usage (total size incl content)
 #56 content size (size of new/modified data)
 
------- PART 13 --------
+------ PART 13 Dockerfile.dev --------
+
+not recomended but u can do Dockerfile + Dockerfile.dev separate
+Im guessing this tutorial is old bc now .dev is inside Dockerfile
+
+industry practice is: 1 repo has 1 Dockerfile + 1 docker compose
+DOCKERFILE = sets up this repo (1.boiler 2.dev 3.build 4.prod)
+DOCKER COMPOSE = for local dev to run app (run 1 command instead of several to run other containers needed together (eg db or eg other repo app))
+DOCKER PROFILES = can choose which docker compose to do (eg just UI no need DB)
+if prod not local then it will use kubernetes or EC2 tho
+
+created Dockerfile.dev so container can be updated when code changes without image rebuild 
+uses volume mount and hot reload
+
+build development image via 
+docker build -f Dockerfile.dev -t myapp-dev .
+then start dev container via
+docker run -p 8000:8000 -v .:/app myapp-dev
+
+then u can open the web app locally:
+the dev version of app container, not prod version (slower)
+although irl u would have all together in dockerfile
+then docker compose to only run this app container + certain other containers
+
+docker compose --profile prod up --build
+docker compose --profile dev down (TO STOP PROFILE)
+
+AI CONCISE OVERVIEW
+#57 Older tutorials split development into 'Dockerfile.dev' and production into 'Dockerfile'.
+#58 Modern industry practice uses exactly 1 Dockerfile (multi-stage) + 1 docker-compose.yml per repo.
+#59 Single Dockerfile handles all environments via target stages: Base ➔ Dev ➔ Build ➔ Prod.
+#60 Docker Compose orchestrates local multi-container environments (e.g., App + DB) in one command.
+#61 Docker Profiles selectively boot specific containers (e.g., UI-only without spinning up a local DB).
+#62 Production deployment bypasses Compose, using cloud infrastructure like AWS EC2, ECS, or Kubernetes.
+
+(Dev (for code changes) used to be separate to dockerfile)
+#63 Dev environments use volume mounting (-v .:/app) and hot-reloading to stream live host code updates.
+#64 Legacy dev execution: docker build -f Dockerfile.dev -t myapp-dev .
+#65 Legacy dev run: docker run -p 8000:8000 -v .:/app myapp-dev
+#66 Modern execution replaces manual commands with a clean 'docker compose up --build'.

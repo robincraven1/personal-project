@@ -9,7 +9,7 @@ def health_check():
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello from Docker!", "environment": "production"}
+    return {"message": "Hello from Docker Compose!", "environment": "production"}
 
 
 @app.get("/items/{item_id}")
