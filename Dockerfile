@@ -1,38 +1,50 @@
 # ============================================
-# Stage 1: Builder - install dependencies
+# Stage 1: Boilerplate - shared runtime settings
 # ============================================
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim AS boiler
+
+# Prevent Python from writing .pyc files and enable unbuffered output
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Create a virtual environment for clean dependency isolation
+# ============================================
+# Stage 2: Development - dependencies and hot reload
+# ============================================
+FROM boiler AS dev
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code (overridden by the Compose volume during development)
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "application:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# ============================================
+# Stage 3: Build - isolated production dependencies
+# ============================================
+FROM boiler AS build
+
 RUN python -m venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
 
-# Copy and install dependencies (cached layer if requirements unchanged)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # ============================================
-# Stage 2: Final - lean production image
+# Stage 4: Production - lean runtime image
 # ============================================
-FROM python:3.11-slim
+FROM boiler AS prod
 
-# Prevent Python from writing .pyc files and enable unbuffered output
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
 ENV PATH="/app/venv/bin:$PATH"
 
-WORKDIR /app
-
-# Copy only the virtual environment from the builder stage
-COPY --from=builder /app/venv /app/venv
-
-# Copy application code
+COPY --from=build /app/venv /app/venv
 COPY application.py .
 
-# Document the port the app listens on
 EXPOSE 8000
 
-# Start the application
 CMD ["uvicorn", "application:app", "--host", "0.0.0.0", "--port", "8000"]

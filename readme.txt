@@ -211,3 +211,26 @@ AI CONCISE OVERVIEW
 #64 Legacy dev execution: docker build -f Dockerfile.dev -t myapp-dev .
 #65 Legacy dev run: docker run -p 8000:8000 -v .:/app myapp-dev
 #66 Modern execution replaces manual commands with a clean 'docker compose up --build'.
+
+------PART 14 docker best practice -----
+
+removed .dev into single dockerfile 4 stages so now:
+
+run dev profile for local code changes (container of app-dev image):
+docker compose --profile dev up --build (USED LOTS)
+docker compose --profile dev down
+
+run prod simulation profile locally (container of app-prod image):
+docker compose --profile prod up --build (USED LOTS)
+docker compose --profile prod down
+
+build + run without compose not recomended (several steps)
+docker compose up doesnt do anything bc disallowed dev + prod run together
+could just remove app-dev so docker compose up does dev default
+and then have app-prod as explicit if want to do 
+
+docker compose services structure:
+
+db: no tag means always run whether dev or prod
+app-dev: target development tag
+app-prod: target production tag
