@@ -134,3 +134,41 @@
 #28 hence must delete staging env + prod env in AWS bc thats 1460hrs.
 #29 if we git commit then push then the AWS EB will auto spin up the EC2 again.
 #30 might amend the fastapi app. software engineering.
+
+
+------ PART 12 - DOCKER ------
+
+#32 created requirements.txt
+#33 have to activate venv to install requirements.txt
+
+#34 created MULTI STAGE dockerfile 
+#35 first BUILDER STAGE installs dependencies + PROD RUNTIME STAGE then final image that acc runs in prod
+#36 only copies what needs from build stage otherwise build cache left inside image
+
+#37 created .dockerignore 
+#38 because otherwise docker looks at all files + folders by default
+
+#39 each instruction in DockerFile creates layer thats cached = docker image layering
+#40 hence dependencies installed at START. bc cached. rarely changes. so faster builds (less bandwidth, and cheaper as no cicd compute)
+#41 if change application.py,, then knows requirements.txt didnt change so no pip install
+
+#42 dockerfile = how to build container
+#43 docker image = the baked cake
+#44 docker container = cake being eaten
+
+#45 built image via docker build -t myapp .
+#46 created container (running instance) from image via docker run -p 8000:8000 myapp
+#47 must match windows port to containers port
+#48 myapp is human readable tag
+
+#49 can manage container in terminal than in docker app
+#50 docker run -d -p 8000:8000 myapp
+#51 detached mode so its in background
+#52 can now run commands to manage container/s
+#53 eg docker ps lists containers running now
+#54 eg docker stop (container) to stop it
+
+#55 disk usage (total size incl content)
+#56 content size (size of new/modified data)
+
+------ PART 13 --------

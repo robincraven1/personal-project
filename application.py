@@ -3,9 +3,13 @@ from fastapi import FastAPI
 app = FastAPI(title="FastAPI CI/CD Demo", version="1.0.0")
 
 
-@app.get("/")
+@app.get("/health")
 def health_check():
     return {"status": "healthy", "version": "1.1.0"}
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello from Docker!", "environment": "production"}
 
 
 @app.get("/items/{item_id}")
